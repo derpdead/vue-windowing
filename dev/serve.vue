@@ -122,7 +122,7 @@ export default Vue.extend({
   <div id="app">
     <ExpandingList
       :items="items"
-      :expanded-item="expandedGroup"
+      :expanded-group="expandedGroup"
       @expand="onExpandGroup">
       <template #group="{ item }">
         <span v-text="item" />
