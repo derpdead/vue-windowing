@@ -62,14 +62,16 @@ export default {
       const results = [
         0,
       ];
-      for (let i = 1; i < this.rowCount; i++) {
+      for (let i = 1; i < this.rowCount; i += 1) {
         results.push(results[i - 1] + (this.cachedHeight[i - 1] || this.estimatedHeight));
       }
       return results;
     },
     totalHeight() {
+      const offset = this.cachedHeight[this.rowCount - 1] || this.estimatedHeight;
+
       return this.rowCount
-        ? this.childPositions[this.rowCount - 1] + (this.cachedHeight[this.rowCount - 1] || this.estimatedHeight)
+        ? this.childPositions[this.rowCount - 1] + offset
         : 0;
     },
     firstVisibleNode() {
@@ -102,9 +104,11 @@ export default {
       return Math.max(0, this.firstVisibleNode - this.renderAhead);
     },
     lastVisibleNode() {
+      const offset = this.childPositions[this.firstVisibleNode] + this.rootHeight;
       let endNode;
-      for (endNode = this.firstVisibleNode; endNode < this.rowCount; endNode++) {
-        if (this.childPositions[endNode] > this.childPositions[this.firstVisibleNode] + this.rootHeight) {
+
+      for (endNode = this.firstVisibleNode; endNode < this.rowCount; endNode += 1) {
+        if (this.childPositions[endNode] > offset) {
           return endNode;
         }
       }
