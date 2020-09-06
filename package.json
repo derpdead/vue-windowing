@@ -1,6 +1,6 @@
 {
   "name": "vue-windowing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Set of components used for virtualizing DOM.",
   "author": {
     "email": "kaczorowski46@gmail.com",
