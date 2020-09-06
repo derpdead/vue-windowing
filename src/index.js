@@ -22,7 +22,6 @@ function registerComponents(Vue) {
 }
 
 const plugin = {
-  // eslint-disable-next-line no-undef
   version: '0.1.0',
   install(Vue) {
     registerComponents(Vue);

@@ -12,12 +12,13 @@
     "plugin",
     "virtualisation"
   ],
+  "main": "./dist/vue-windowing.js",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git://github.com/derpdead/vue-windowing.git"
   },
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "webpack --config config/webpack.config.js"
   },
