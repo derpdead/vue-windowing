@@ -6,8 +6,8 @@
         :estimated-height="estimatedHeight">
         <template #item="{ item, index}">
             <div
-                v-if="headers[index]"
-                @click="onExpandItem(headers[index])">
+                v-if="typeof headers[item] !== 'undefined'"
+                @click="onExpandGroup(item)">
                 <slot
                     name="group"
                     :item="item" />
@@ -34,12 +34,12 @@ export default {
       type: Object,
       default: () => ({}),
     },
-    expandedItem: {
+    expandedGroup: {
       type: [
         String,
         Number,
       ],
-      default: -1,
+      default: '',
     },
     rootHeight: {
       type: Number,
@@ -64,9 +64,9 @@ export default {
       let items = [];
 
       Object.keys(this.items).forEach((key) => {
-        this.headers[items.length] = key;
+        this.headers[key] = items.length;
 
-        if (Array.isArray(this.items[key]) && key === this.expandedItem) {
+        if (Array.isArray(this.items[key]) && key === this.expandedGroup) {
           // Flattening structure
           items = [
             ...items,
@@ -83,8 +83,8 @@ export default {
     },
   },
   methods: {
-    onExpandItem(key) {
-      this.$emit('expand', this.expandedItem === key ? -1 : key);
+    onExpandGroup(key) {
+      this.$emit('expand', this.expandedGroup === key ? '' : key);
     },
   },
 };

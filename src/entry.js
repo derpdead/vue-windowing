@@ -1,6 +1,4 @@
 // Import vue component
-import component from '@/vue-windowing.vue';
-
 import VirtualScroll from '@/VirtualScroll';
 import AutoHeightMeasurer from '@/AutoHeightMeasurer';
 import ExpandingList from '@/ExpandingList';

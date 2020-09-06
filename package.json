@@ -1,6 +1,6 @@
 {
   "name": "vue-windowing",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "main": "dist/vue-windowing.ssr.js",
   "browser": "dist/vue-windowing.esm.js",

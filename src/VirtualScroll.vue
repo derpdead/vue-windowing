@@ -57,6 +57,11 @@ export default {
       cachedHeight: {},
     };
   },
+  watch: {
+    items() {
+      this.cachedHeight = {};
+    },
+  },
   computed: {
     childPositions() {
       const results = [
