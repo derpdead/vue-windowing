@@ -1,0 +1,52 @@
+{
+  "name": "vue-windowing",
+  "version": "0.1.0",
+  "description": "Set of components used for virtualizing DOM.",
+  "author": {
+    "email": "kaczorowski46@gmail.com",
+    "name": "Maciej Kaczorowski"
+  },
+  "keywords": [
+    "vue",
+    "vuejs",
+    "plugin",
+    "virtualisation"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/derpdead/vue-windowing.git"
+  },
+  "private": true,
+  "scripts": {
+    "build": "webpack --config config/webpack.config.js"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "vue": "^2.6.11"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^4.5.4",
+    "@vue/cli-plugin-eslint": "^4.5.4",
+    "@vue/cli-service": "^4.5.4",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.1.0",
+    "@vue/eslint-config-airbnb": "^5.0.2",
+    "babel-loader": "^8.1.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint-plugin-import": "^2.20.2",
+    "cross-env": "^7.0.2",
+    "css-loader": "^4.2.2",
+    "eslint": "^7.8.1",
+    "eslint-plugin-vue": "^6.2.2",
+    "file-loader": "^6.1.0",
+    "node-sass": "^4.14.1",
+    "sass-loader": "^10.0.2",
+    "style-loader": "^1.2.1",
+    "vue-loader": "^15.9.3",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
