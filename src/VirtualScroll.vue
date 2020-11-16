@@ -79,6 +79,11 @@ export default {
         ? this.childPositions[this.rowCount - 1] + offset
         : 0;
     },
+    fixedRootHeight() {
+      return this.rootHeight > this.totalHeight
+        ? this.totalHeight
+        : this.rootHeight;
+    },
     firstVisibleNode() {
       let startRange = 0;
       let endRange = this.rowCount ? this.rowCount - 1 : this.rowCount;
@@ -109,7 +114,7 @@ export default {
       return Math.max(0, this.firstVisibleNode - this.renderAhead);
     },
     lastVisibleNode() {
-      const offset = this.childPositions[this.firstVisibleNode] + this.rootHeight;
+      const offset = this.childPositions[this.firstVisibleNode] + this.fixedRootHeight;
       let endNode;
 
       for (endNode = this.firstVisibleNode; endNode < this.rowCount; endNode += 1) {
@@ -149,13 +154,14 @@ export default {
     },
     rootStyle() {
       return {
-        height: `${this.rootHeight}px`,
+        height: `${this.fixedRootHeight}px`,
       };
     },
   },
   methods: {
     onMeasuredHeight({
-      index, height,
+      index,
+      height,
     }) {
       this.cachedHeight = {
         ...this.cachedHeight,

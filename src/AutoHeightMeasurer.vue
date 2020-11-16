@@ -10,20 +10,29 @@ export default {
   data() {
     return {
       observer: null,
+      isObserving: false,
     };
   },
   updated() {
     if (this.observer) {
       this.observer.observe(this.$el);
+      this.isObserving = true;
     }
   },
   mounted() {
-    this.observer = new ResizeObserver(() => {
+    this.observer = new ResizeObserver(([entry]) => {
+      this.$emit('height', {
+        index: this.index,
+        height: entry.contentRect.height,
+      });
+    });
+
+    if (!this.isObserving) {
       this.$emit('height', {
         index: this.index,
         height: this.$el.offsetHeight,
       });
-    });
+    }
   },
   beforeDestroy() {
     if (this.observer) {

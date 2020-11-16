@@ -1,15 +1,18 @@
 <script>
 import Vue from 'vue';
 import ExpandingList from '@/ExpandingList';
+import VirtualScroll from '@/VirtualScroll';
 
 export default Vue.extend({
   name: 'ServeDev',
   components: {
     ExpandingList,
+    VirtualScroll,
   },
   data() {
     return {
       expandedGroup: -1,
+      flatItems: [1, 2, 3, 4],
       items: {
         number: [
           1,
@@ -120,16 +123,31 @@ export default Vue.extend({
 
 <template>
   <div id="app">
-    <ExpandingList
-      :items="items"
-      :expanded-group="expandedGroup"
-      @expand="onExpandGroup">
-      <template #group="{ item }">
-        <span v-text="item" />
-      </template>
-      <template #item="{ item }">
-        <li v-text="item" />
-      </template>
-    </ExpandingList>
+      <div class="horizontal-wrapper">
+          <ExpandingList
+              :items="items"
+              :expanded-group="expandedGroup"
+              @expand="onExpandGroup">
+              <template #group="{ item }">
+                  <span v-text="item" />
+              </template>
+              <template #item="{ item }">
+                  <li v-text="item" />
+              </template>
+          </ExpandingList>
+          <VirtualScroll :items="flatItems">
+              <template #item="{ item }">
+                  <li v-text="item" />
+              </template>
+          </VirtualScroll>
+      </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+    .horizontal-wrapper {
+        display: grid;
+        grid-column-gap: 24px;
+        grid-template-columns: max-content max-content;
+    }
+</style>
