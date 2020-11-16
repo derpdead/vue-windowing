@@ -21,10 +21,12 @@ export default {
   },
   mounted() {
     this.observer = new ResizeObserver(([entry]) => {
-      this.$emit('height', {
-        index: this.index,
-        height: entry.contentRect.height,
-      });
+      if (entry.contentRect.height !== 0) {
+        this.$emit('height', {
+          index: this.index,
+          height: entry.contentRect.height,
+        });
+      }
     });
 
     if (!this.isObserving) {

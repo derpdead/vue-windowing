@@ -12,7 +12,7 @@ export default Vue.extend({
   data() {
     return {
       expandedGroup: -1,
-      flatItems: [1, 2, 3, 4],
+      flatItems: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
       items: {
         number: [
           1,
@@ -82,6 +82,7 @@ export default Vue.extend({
         string: [],
       },
       title: 'Take an action',
+      isVisible: false,
     };
   },
   methods: {
@@ -124,6 +125,7 @@ export default Vue.extend({
 <template>
   <div id="app">
       <div class="horizontal-wrapper">
+          <button @click="isVisible = !isVisible">On visibility change</button>
           <ExpandingList
               :items="items"
               :expanded-group="expandedGroup"
@@ -135,7 +137,7 @@ export default Vue.extend({
                   <li v-text="item" />
               </template>
           </ExpandingList>
-          <VirtualScroll :items="flatItems">
+          <VirtualScroll :root-height="100" v-show="isVisible" :items="flatItems">
               <template #item="{ item }">
                   <li v-text="item" />
               </template>
