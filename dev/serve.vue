@@ -1,7 +1,7 @@
 <script>
 import Vue from 'vue';
-import ExpandingList from '@/ExpandingList';
-import VirtualScroll from '@/VirtualScroll';
+import ExpandingList from '@/components/ExpandingList';
+import VirtualScroll from '@/components/VirtualScroll';
 
 export default Vue.extend({
   name: 'ServeDev',

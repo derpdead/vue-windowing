@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import VirtualScroll from '@/VirtualScroll';
+import VirtualScroll from '@/components/VirtualScroll';
 
 export default {
   name: 'NestedList',

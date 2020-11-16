@@ -1,17 +1,14 @@
 // Import vue component
-import VirtualScroll from '@/VirtualScroll';
-import AutoHeightMeasurer from '@/AutoHeightMeasurer';
-import ExpandingList from '@/ExpandingList';
-import NestedList from '@/NestedList';
+import * as components from '@/components/index';
 
 // install function executed by Vue.use()
 const install = function installVueWindowing(Vue) {
   if (install.installed) return;
   install.installed = true;
-  Vue.component('VirtualScroll', VirtualScroll);
-  Vue.component('AutoHeightMeasurer', AutoHeightMeasurer);
-  Vue.component('ExpandingList', ExpandingList);
-  Vue.component('NestedList', NestedList);
+
+  Object.entries(components).forEach(([componentName, component]) => {
+    Vue.component(componentName, component);
+  });
 };
 
 // Create module definition for Vue.use()
@@ -34,13 +31,9 @@ if (process.env.ES_BUILD === 'false') {
   }
 }
 
-// Inject install function into component - allows component
-// to be registered via Vue.use() as well as Vue.component()
-component.install = install;
-
-// Export component by default
-export default component;
+export default plugin;
 
 // It's possible to expose named exports when writing components that can
 // also be used as directives, etc. - eg. import { RollupDemoDirective } from 'rollup-demo';
 // export const RollupDemoDirective = component;
+export * from '@/components/index';

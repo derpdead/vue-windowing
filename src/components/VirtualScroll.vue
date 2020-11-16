@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import AutoHeightMeasurer from '@/AutoHeightMeasurer';
+import AutoHeightMeasurer from '@/components/AutoHeightMeasurer';
 
 export default {
   name: 'VirtualScroll',
