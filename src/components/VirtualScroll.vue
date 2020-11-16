@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import AutoHeightMeasurer from '@/components/AutoHeightMeasurer';
+import AutoHeightMeasurer from './AutoHeightMeasurer.vue';
 
 export default {
   name: 'VirtualScroll',
