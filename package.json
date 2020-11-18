@@ -1,7 +1,7 @@
 {
   "name": "vue-windowing",
   "version": "0.5.4",
-  "description": "",
+  "description": "Set of components used for virtualizing DOM",
   "main": "dist/vue-windowing.ssr.js",
   "browser": "dist/vue-windowing.esm.js",
   "module": "dist/vue-windowing.esm.js",
