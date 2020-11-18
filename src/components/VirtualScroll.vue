@@ -14,6 +14,7 @@
                     v-for="(item, index) in visibleItems"
                     :key="index + startNode"
                     :index="index + startNode"
+                    :height="cachedHeight[index + startNode]"
                     @height="onMeasuredHeight">
                     <slot
                         name="item"

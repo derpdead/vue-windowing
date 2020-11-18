@@ -6,6 +6,10 @@ export default {
       type: Number,
       required: true,
     },
+    height: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -14,26 +18,18 @@ export default {
     };
   },
   updated() {
-    if (this.observer) {
+    if (this.observer && !this.isObserving) {
       this.observer.observe(this.$el);
       this.isObserving = true;
     }
   },
   mounted() {
     this.observer = new ResizeObserver(([entry]) => {
-      if (entry.contentRect.height !== 0) {
-        this.$emit('height', {
-          index: this.index,
-          height: entry.contentRect.height,
-        });
-      }
+      this.onHeightChange(entry.contentRect.height);
     });
 
     if (!this.isObserving) {
-      this.$emit('height', {
-        index: this.index,
-        height: this.$el.offsetHeight,
-      });
+      this.onHeightChange(this.$el.offsetHeight);
     }
   },
   beforeDestroy() {
@@ -47,6 +43,17 @@ export default {
     }
 
     return null;
+  },
+  methods: {
+    onHeightChange(height) {
+      if (height !== this.height
+        && height !== 0) {
+        this.$emit('height', {
+          index: this.index,
+          height,
+        });
+      }
+    },
   },
 };
 </script>
