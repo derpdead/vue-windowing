@@ -1,47 +1,46 @@
 <template>
-    <div
-        class="virtual-scroll"
-        ref="root"
-        :style="rootStyle"
-        @scroll="onScroll">
+    <ResizeObserver @resize="onResize">
         <div
-            class="virtual-scroll__viewport"
-            :style="viewportStyle">
+            class="virtual-scroll"
+            ref="root"
+            @scroll="onScroll">
             <div
-                class="virtual-scroll__spacer"
-                :style="spacerStyle">
-                <AutoHeightMeasurer
-                    v-for="(item, index) in visibleItems"
-                    :key="index + startNode"
-                    :index="index + startNode"
-                    :height="cachedHeight[index + startNode]"
-                    @height="onMeasuredHeight">
-                    <slot
-                        name="item"
-                        :item="item"
-                        :index="index + startNode" />
-                </AutoHeightMeasurer>
+                :style="viewportStyle"
+                class="virtual-scroll__viewport">
+                <div
+                    :style="spacerStyle"
+                    class="virtual-scroll__spacer">
+                    <AutoHeightMeasurer
+                        v-for="(item, index) in visibleItems"
+                        :key="index + startNode"
+                        :index="index + startNode"
+                        :height="cachedHeight[index + startNode]"
+                        @height="onMeasuredHeight">
+                        <slot
+                            name="item"
+                            :item="item"
+                            :index="index + startNode" />
+                    </AutoHeightMeasurer>
+                </div>
             </div>
         </div>
-    </div>
+    </ResizeObserver>
 </template>
 
 <script>
+import ResizeObserver from './ResizeObserver.vue';
 import AutoHeightMeasurer from './AutoHeightMeasurer.vue';
 
 export default {
   name: 'VirtualScroll',
   components: {
     AutoHeightMeasurer,
+    ResizeObserver,
   },
   props: {
     items: {
       type: Array,
       default: () => [],
-    },
-    rootHeight: {
-      type: Number,
-      default: 400,
     },
     renderAhead: {
       type: Number,
@@ -54,6 +53,7 @@ export default {
   },
   data() {
     return {
+      height: 0,
       scrollTop: 0,
       cachedHeight: {},
     };
@@ -80,10 +80,10 @@ export default {
         ? this.childPositions[this.rowCount - 1] + offset
         : 0;
     },
-    fixedRootHeight() {
-      return this.rootHeight > this.totalHeight
+    fixedHeight() {
+      return this.height > this.totalHeight
         ? this.totalHeight
-        : this.rootHeight;
+        : this.height;
     },
     firstVisibleNode() {
       let startRange = 0;
@@ -115,7 +115,7 @@ export default {
       return Math.max(0, this.firstVisibleNode - this.renderAhead);
     },
     lastVisibleNode() {
-      const offset = this.childPositions[this.firstVisibleNode] + this.fixedRootHeight;
+      const offset = this.childPositions[this.firstVisibleNode] + this.fixedHeight;
       let endNode;
 
       for (endNode = this.firstVisibleNode; endNode < this.rowCount; endNode += 1) {
@@ -155,11 +155,14 @@ export default {
     },
     rootStyle() {
       return {
-        height: `${this.fixedRootHeight}px`,
+        height: `${this.fixedHeight}px`,
       };
     },
   },
   methods: {
+    onResize(entry) {
+      this.height = entry.contentRect.height;
+    },
     onMeasuredHeight({
       index,
       height,
@@ -180,6 +183,7 @@ export default {
 
 <style lang="scss" scoped>
 .virtual-scroll {
+    height: 100%;
     overflow: auto;
 
     &__spacer {

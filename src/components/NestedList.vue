@@ -1,12 +1,11 @@
 <template>
     <VirtualScroll
         :items="flattenedItems"
-        :root-height="rootHeight"
         :render-ahead="renderAhead"
         :estimated-height="estimatedHeight">
         <template #item="{ item, index}">
             <slot
-                v-if="headers[index]"
+                v-if="parents[index]"
                 name="group"
                 :item="item" />
             <slot
@@ -19,6 +18,7 @@
 </template>
 
 <script>
+import { getFlattenedItems } from '../utils';
 import VirtualScroll from './VirtualScroll.vue';
 
 export default {
@@ -28,12 +28,8 @@ export default {
   },
   props: {
     items: {
-      type: Object,
+      type: [Array, Object],
       default: () => ({}),
-    },
-    rootHeight: {
-      type: Number,
-      default: 400,
     },
     renderAhead: {
       type: Number,
@@ -46,30 +42,22 @@ export default {
   },
   data() {
     return {
-      headers: {},
+      flattenedItems: [],
+      parents: {},
     };
   },
-  computed: {
-    flattenedItems() {
-      let items = [];
+  watch: {
+    items: {
+      immediate: true,
+      handler() {
+        const {
+          flattenedItems,
+          parents,
+        } = getFlattenedItems(this.items);
 
-      Object.keys(this.items).forEach((key) => {
-        this.headers[items.length] = key;
-
-        if (Array.isArray(this.items[key])) {
-          // Flattening structure
-          items = [
-            ...items,
-            key,
-            ...this.items[key],
-          ];
-        } else {
-          // Nesting
-          items.push(key);
-        }
-      });
-
-      return items;
+        this.flattenedItems = flattenedItems;
+        this.parents = parents;
+      },
     },
   },
 };

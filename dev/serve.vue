@@ -127,6 +127,7 @@ export default Vue.extend({
       <div class="horizontal-wrapper">
           <button @click="isVisible = !isVisible">On visibility change</button>
           <ExpandingList
+              style="height: 100px"
               :items="items"
               :expanded-group="expandedGroup"
               @expand="onExpandGroup">
@@ -137,7 +138,7 @@ export default Vue.extend({
                   <li v-text="item" />
               </template>
           </ExpandingList>
-          <VirtualScroll :root-height="100" v-show="isVisible" :items="flatItems">
+          <VirtualScroll style="height: 100px" v-show="isVisible" :items="flatItems">
               <template #item="{ item }">
                   <li v-text="item" />
               </template>

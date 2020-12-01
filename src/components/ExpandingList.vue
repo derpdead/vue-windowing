@@ -1,7 +1,6 @@
 <template>
     <VirtualScroll
         :items="flattenedItems"
-        :root-height="rootHeight"
         :render-ahead="renderAhead"
         :estimated-height="estimatedHeight">
         <template #item="{ item, index}">
@@ -40,10 +39,6 @@ export default {
         Number,
       ],
       default: '',
-    },
-    rootHeight: {
-      type: Number,
-      default: 400,
     },
     renderAhead: {
       type: Number,
