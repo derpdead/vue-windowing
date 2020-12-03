@@ -5,25 +5,27 @@
             ref="root"
             @scroll="onScroll">
             <slot name="header" />
-            <div
-                :style="viewportStyle"
-                class="virtual-scroll__viewport">
+            <slot name="body">
                 <div
-                    :style="spacerStyle"
-                    class="virtual-scroll__spacer">
-                    <AutoHeightMeasurer
-                        v-for="(item, index) in visibleItems"
-                        :key="index + startNode"
-                        :index="index + startNode"
-                        :height="cachedHeight[index + startNode]"
-                        @height="onMeasuredHeight">
-                        <slot
-                            name="item"
-                            :item="item"
-                            :index="index + startNode" />
-                    </AutoHeightMeasurer>
+                    :style="viewportStyle"
+                    class="virtual-scroll__viewport">
+                    <div
+                        :style="spacerStyle"
+                        class="virtual-scroll__spacer">
+                        <AutoHeightMeasurer
+                            v-for="(item, index) in visibleItems"
+                            :key="index + startNode"
+                            :index="index + startNode"
+                            :height="cachedHeight[index + startNode]"
+                            @height="onMeasuredHeight">
+                            <slot
+                                name="item"
+                                :item="item"
+                                :index="index + startNode" />
+                        </AutoHeightMeasurer>
+                    </div>
                 </div>
-            </div>
+            </slot>
             <slot name="footer" />
         </div>
     </ResizeObserver>

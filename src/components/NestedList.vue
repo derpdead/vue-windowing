@@ -6,6 +6,9 @@
         <template #header>
             <slot name="header" />
         </template>
+        <template #body>
+            <slot name="body" />
+        </template>
         <template #item="{ item, index}">
             <slot
                 v-if="parents[index]"
