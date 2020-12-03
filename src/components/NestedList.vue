@@ -3,6 +3,9 @@
         :items="flattenedItems"
         :render-ahead="renderAhead"
         :estimated-height="estimatedHeight">
+        <template #header>
+            <slot name="header" />
+        </template>
         <template #item="{ item, index}">
             <slot
                 v-if="parents[index]"
@@ -13,6 +16,9 @@
                 name="item"
                 :index="index"
                 :item="item" />
+        </template>
+        <template #footer>
+            <slot name="footer" />
         </template>
     </VirtualScroll>
 </template>

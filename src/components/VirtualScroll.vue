@@ -4,6 +4,7 @@
             class="virtual-scroll"
             ref="root"
             @scroll="onScroll">
+            <slot name="header" />
             <div
                 :style="viewportStyle"
                 class="virtual-scroll__viewport">
@@ -23,6 +24,7 @@
                     </AutoHeightMeasurer>
                 </div>
             </div>
+            <slot name="footer" />
         </div>
     </ResizeObserver>
 </template>
@@ -183,7 +185,7 @@ export default {
 
 <style lang="scss" scoped>
 .virtual-scroll {
-    height: 100%;
+    position: relative;
     overflow: auto;
 
     &__spacer {
@@ -196,5 +198,10 @@ export default {
         will-change: transform;
         overflow: hidden;
     }
+}
+
+.test {
+    position: sticky;
+    top: 0;
 }
 </style>
