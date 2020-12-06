@@ -9,13 +9,8 @@
         <template #body>
             <slot name="body" />
         </template>
-        <template #item="{ item, index}">
+        <template #item="{ item, index }">
             <slot
-                v-if="parents[index]"
-                name="group"
-                :item="item" />
-            <slot
-                v-else
                 name="item"
                 :index="index"
                 :item="item" />
@@ -37,8 +32,8 @@ export default {
   },
   props: {
     items: {
-      type: [Array, Object],
-      default: () => ({}),
+      type: Array,
+      default: () => [],
     },
     renderAhead: {
       type: Number,
@@ -52,20 +47,13 @@ export default {
   data() {
     return {
       flattenedItems: [],
-      parents: {},
     };
   },
   watch: {
     items: {
       immediate: true,
       handler() {
-        const {
-          flattenedItems,
-          parents,
-        } = getFlattenedItems(this.items);
-
-        this.flattenedItems = flattenedItems;
-        this.parents = parents;
+        this.flattenedItems = getFlattenedItems({ items: this.items });
       },
     },
   },

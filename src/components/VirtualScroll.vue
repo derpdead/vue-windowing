@@ -14,7 +14,7 @@
                         class="virtual-scroll__spacer">
                         <AutoHeightMeasurer
                             v-for="(item, index) in visibleItems"
-                            :key="index + startNode"
+                            :key="`${index + startNode} | ${item.id || item}`"
                             :index="index + startNode"
                             :height="cachedHeight[index + startNode]"
                             @height="onMeasuredHeight">
@@ -63,8 +63,10 @@ export default {
     };
   },
   watch: {
-    items() {
-      this.cachedHeight = {};
+    items(newValue, oldValue) {
+      if (newValue.length !== oldValue.length) {
+        this.cachedHeight = {};
+      }
     },
   },
   computed: {

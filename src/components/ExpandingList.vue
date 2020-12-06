@@ -1,6 +1,6 @@
 <template>
     <VirtualScroll
-        :items="flattenedItems"
+        :items="expandedItems"
         :render-ahead="renderAhead"
         :estimated-height="estimatedHeight">
         <template #header>
@@ -9,19 +9,12 @@
         <template #body>
             <slot name="body" />
         </template>
-        <template #item="{ item, index}">
-            <div
-                v-if="typeof headers[item] !== 'undefined'"
-                @click="onExpandGroup(item)">
-                <slot
-                    name="group"
-                    :item="item" />
-            </div>
+        <template #item="{ item, index }">
             <slot
-                v-else
                 name="item"
                 :index="index"
-                :item="item" />
+                :item="item"
+                :on-expand="onExpandItem" />
         </template>
         <template #footer>
             <slot name="footer" />
@@ -30,6 +23,7 @@
 </template>
 
 <script>
+import { getExpandingFlattenedItems } from '../utils';
 import VirtualScroll from './VirtualScroll.vue';
 
 export default {
@@ -39,15 +33,8 @@ export default {
   },
   props: {
     items: {
-      type: Object,
-      default: () => ({}),
-    },
-    expandedGroup: {
-      type: [
-        String,
-        Number,
-      ],
-      default: '',
+      type: Array,
+      default: () => [],
     },
     renderAhead: {
       type: Number,
@@ -57,38 +44,64 @@ export default {
       type: Number,
       default: 30,
     },
+    expanded: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
-      headers: {},
+      flattenedItems: [],
     };
   },
   computed: {
-    flattenedItems() {
-      let items = [];
+    expandedItems() {
+      const expandedItems = [];
+      const expandedParents = {};
 
-      Object.keys(this.items).forEach((key) => {
-        this.headers[key] = items.length;
+      this.flattenedItems.forEach((item) => {
+        if (item.expanded) {
+          expandedParents[item.id] = true;
+        }
 
-        if (Array.isArray(this.items[key]) && key === this.expandedGroup) {
-          // Flattening structure
-          items = [
-            ...items,
-            key,
-            ...this.items[key],
-          ];
-        } else {
-          // Nesting
-          items.push(key);
+        if (expandedParents[item.rootId] || item.level === 0) {
+          expandedItems.push(item);
         }
       });
 
-      return items;
+      return expandedItems;
     },
   },
+  mounted() {
+    this.$watch((vm) => [vm.items, vm.expanded], () => {
+      this.flattenedItems = getExpandingFlattenedItems({
+        items: this.items,
+        expanded: this.expanded,
+      });
+    }, {
+      immediate: true,
+    });
+  },
   methods: {
-    onExpandGroup(key) {
-      this.$emit('expand', this.expandedGroup === key ? '' : key);
+    onExpandItem(item) {
+      const itemIndex = this.flattenedItems.findIndex(({ id }) => id === item.id);
+
+      if (itemIndex !== -1) {
+        this.flattenedItems[itemIndex].expanded = !this.flattenedItems[itemIndex].expanded;
+
+        if (!this.flattenedItems[itemIndex].expanded) {
+          let i = itemIndex + 1;
+
+          while (i < this.flattenedItems.length - 1
+            && this.flattenedItems[i].rootIndex > this.flattenedItems[itemIndex].rootIndex) {
+            this.flattenedItems[i].expanded = false;
+
+            i += 1;
+          }
+        }
+
+        this.$emit('expand', item);
+      }
     },
   },
 };

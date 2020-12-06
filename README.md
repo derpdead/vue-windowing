@@ -50,8 +50,17 @@ Example:
         :items="items"
         :render-ahead="renderAhead"
         :estimated-height="estimatedHeight">
-        <template #item="{ item, index}">
+        <template #header>
+            <!-- Might be added sticky / floating header -->
+        </template>
+        <template #body>
+            <!-- Might be added custom body which will overwrite DOM virtualization - useful for presenting placeholders in case that there is no data -->
+        </template>
+        <template #item="{ item, index }">
             <div v-text="item" />
+        </template>
+        <template #footer>
+            <!-- Might be added sticky / floating footer -->
         </template>
     </VirtualScroll>
 </template>
@@ -71,7 +80,7 @@ export default {
 
 ## NestedList
 
-Wrapper for VirtualScroll. It adds simple functionality of flattening passed items.
+Wrapper for VirtualScroll. It adds simple functionality of flattening passed items. Allowing to render tree data structures.
 
 Example: 
 
@@ -82,11 +91,17 @@ Example:
         :items="items"
         :render-ahead="renderAhead"
         :estimated-height="estimatedHeight">
-        <template #group="{ item, index }">
-            <h3 v-text="item" />
+        <template #header>
+            <!-- Might be added sticky / floating header -->
+        </template>
+        <template #body>
+            <!-- Might be added custom body which will overwrite DOM virtualization - useful for presenting placeholders in case that there is no data -->
         </template>
         <template #item="{ item, index }">
             <div v-text="item" />
+        </template>
+        <template #footer>
+            <!-- Might be added sticky / floating footer -->
         </template>
     </NestedList>
 </template>
@@ -95,10 +110,24 @@ Example:
 export default {
     data() {
         return {
-            items: {
-                numberGroup: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-                stringGroup: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
-            },
+            items: [
+                {
+                    id: 'root',
+                    children: [
+                        {
+                            id: 'firstLevel - 1',
+                            children: [
+                                {
+                                    id: 'secondLevel - 1',
+                                }
+                            ],
+                        },
+                        {
+                            id: 'firstLevel - 2',
+                        }
+                    ]
+                }
+            ],
             renderAhead: 2, // Buffer, +2 at top / bottom in queue
             estimatedHeight: 20, // We need to assume that there is some default height for each row which will be recalculated later
         };       
@@ -109,7 +138,7 @@ export default {
 
 ## ExpandingList
 
-Wrapper for VirtualScroll. It adds simple functionality of flattening passed items and toggling visibility of groups.
+Wrapper for VirtualScroll. It adds simple functionality of flattening passed items and toggling visibility of groups. Allowing to render tree data structures. 
 
 Example: 
 
@@ -120,13 +149,18 @@ Example:
         :items="items"
         :render-ahead="renderAhead"
         :estimated-height="estimatedHeight"
-        :expanded-group="expandedGroup"
         @expand="onExpandGroup">
-        <template #group="{ item, index }">
-            <div v-text="item" />
+        <template #header>
+            <!-- Might be added sticky / floating header -->
         </template>
-        <template #item="{ item, index }">
-            <div v-text="item" />
+        <template #body>
+            <!-- Might be added custom body which will overwrite DOM virtualization - useful for presenting placeholders in case that there is no data -->
+        </template>
+        <template #item="{ item, index, onExpand }">
+            <div v-text="item" @click="onExpand" />
+        </template>
+        <template #footer>
+            <!-- Might be added sticky / floating footer -->
         </template>
     </ExpandingList>
 </template>
@@ -135,23 +169,33 @@ Example:
 export default {
     data() {
         return {
-            items: {
-                numberGroup: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-                stringGroup: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14'],
-            },
+            items: [
+                {
+                    id: 'root',
+                    children: [
+                        {
+                            id: 'firstLevel - 1',
+                            children: [
+                                {
+                                    id: 'secondLevel - 1',
+                                }
+                            ],
+                        },
+                        {
+                            id: 'firstLevel - 2',
+                        }
+                    ]
+                }
+            ],
             renderAhead: 2, // Buffer, +2 at top / bottom in queue
             estimatedHeight: 20, // We need to assume that there is some default height for each row which will be recalculated later
-            expandedGroup: '',
         };       
     },
     methods: {
-        onExpandGroup(group) {
-            // You may fetch data here and mutate items object
-            // this.items[group] = ['a', 'b', 'c', 'd'];
-
-            this.expandedGroup = group;
+        onExpandGroup(item) {
+            // We might want to asynchronously prefetch data for expanded group
         }
-    }   
+    }
 }
 </script>
 ```
@@ -163,7 +207,7 @@ Props:
 | items      | list of items | [] or {} for Nested/Expanding List |
 | renderAhead | number of buffered items at the top/bottom      |    2 |
 | estimatedHeight | approximated value of each row height      |    30 |
-| expandedGroup | key of expanded group - only for ExpandingList    |    '' |
+| expanded | the flag which toggles between state of all items - only for ExpandingList    |    '' |
 
 Events:
 
@@ -171,26 +215,10 @@ Events:
 
 ### Tips
 
-Do not use margin directly for styling node items! Height won't be measured well.
-{: .alert .alert-danger}
+> :error: Do not use margin directly for styling node items! Height won't be measured well.
 
-Each virtualized component by default will expand height by 100%, to override it and make things happening you either have to set height / max-height of component or by implementing dynamic height content with flexbox / grid. 
-{: .alert .alert-info}
+> :information_source: Each virtualized component by default will fully expand, to make things happening you either have to set height / max-height of component or by implementing dynamic height content with flexbox / grid.
 
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
-
-<style>
-.alert-info {
-  color: rgb(49,112,143) !important;
-}
-
-.alert-green {
-  color: rgb(60,118,61) !important;
-}
-
-.alert-danger {
-  color: rgb(169,68,66) !important;
-}
-</style>
