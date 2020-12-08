@@ -213,9 +213,9 @@ Events:
 
 - expand: click event for group element which toggles between visible state of group items - only for ExpandingList
 
-### Tips
+## Tips
 
-> :error: Do not use margin directly for styling node items! Height won't be measured well.
+> :x: Do not use margin directly for styling node items! Height won't be measured well.
 
 > :information_source: Each virtualized component by default will fully expand, to make things happening you either have to set height / max-height of component or by implementing dynamic height content with flexbox / grid.
 
