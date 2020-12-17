@@ -45,7 +45,7 @@ export default {
       default: 30,
     },
     expanded: {
-      type: Boolean,
+      type: [Object, Boolean],
       default: false,
     },
   },
@@ -73,10 +73,10 @@ export default {
     },
   },
   mounted() {
-    this.$watch((vm) => [vm.items, vm.expanded], () => {
+    this.$watch((vm) => [vm.items, vm.expanded], ([items, expanded]) => {
       this.flattenedItems = getExpandingFlattenedItems({
-        items: this.items,
-        expanded: this.expanded,
+        items,
+        expanded,
       });
     }, {
       immediate: true,

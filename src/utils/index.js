@@ -31,10 +31,14 @@ export const getExpandingFlattenedItems = ({
   items.forEach((item) => {
     const { children = [], ...rest } = item;
 
+    const isExpanded = typeof expanded === 'object'
+      ? expanded[rest.id]
+      : expanded;
+
     flattenedItems.push({
       ...rest,
       level,
-      expanded,
+      expanded: isExpanded,
       rootId,
       rootIndex,
     });
