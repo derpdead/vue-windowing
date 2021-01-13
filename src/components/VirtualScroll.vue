@@ -1,45 +1,49 @@
 <template>
-    <ResizeObserver @resize="onResize">
-        <div
-            class="virtual-scroll"
-            ref="root"
-            @scroll="onScroll">
-            <slot name="header" />
-            <slot name="body">
-                <div
-                    :style="viewportStyle"
-                    class="virtual-scroll__viewport">
+    <IntersectionObserver @intersect="onIntersect">
+        <ResizeObserver @resize="onResize">
+            <div
+                class="virtual-scroll"
+                ref="root"
+                @scroll="onScroll">
+                <slot name="header" />
+                <slot name="body">
                     <div
-                        :style="spacerStyle"
-                        class="virtual-scroll__spacer">
-                        <AutoHeightMeasurer
-                            v-for="(item, index) in visibleItems"
-                            :key="`${index + startNode} | ${item.id || item}`"
-                            :index="index + startNode"
-                            :height="cachedHeight[index + startNode]"
-                            @height="onMeasuredHeight">
-                            <slot
-                                name="item"
-                                :item="item"
-                                :index="index + startNode" />
-                        </AutoHeightMeasurer>
+                        :style="viewportStyle"
+                        class="virtual-scroll__viewport">
+                        <div
+                            :style="spacerStyle"
+                            class="virtual-scroll__spacer">
+                            <AutoHeightMeasurer
+                                v-for="(item, index) in visibleItems"
+                                :key="`${index + startNode} | ${item.id || item}`"
+                                :index="index + startNode"
+                                :height="cachedHeight[index + startNode]"
+                                @height="onMeasuredHeight">
+                                <slot
+                                    name="item"
+                                    :item="item"
+                                    :index="index + startNode" />
+                            </AutoHeightMeasurer>
+                        </div>
                     </div>
-                </div>
-            </slot>
-            <slot name="footer" />
-        </div>
-    </ResizeObserver>
+                </slot>
+                <slot name="footer" />
+            </div>
+        </ResizeObserver>
+    </IntersectionObserver>
 </template>
 
 <script>
 import ResizeObserver from './ResizeObserver.vue';
 import AutoHeightMeasurer from './AutoHeightMeasurer.vue';
+import IntersectionObserver from './IntersectionObserver.vue';
 
 export default {
   name: 'VirtualScroll',
   components: {
     AutoHeightMeasurer,
     ResizeObserver,
+    IntersectionObserver,
   },
   props: {
     items: {
@@ -166,6 +170,16 @@ export default {
     },
   },
   methods: {
+    onIntersect(isIntersecting) {
+      if (isIntersecting
+          && this.firstVisibleNode !== 0
+          && this.scrollTop > 0
+          && this.scrollTop !== this.$refs.root.scrollTop) {
+        window.requestAnimationFrame(() => {
+          this.$refs.root.scrollTo(0, this.scrollTop);
+        });
+      }
+    },
     onResize(entry) {
       this.height = entry.contentRect.height;
     },
