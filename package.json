@@ -1,6 +1,6 @@
 {
   "name": "vue-windowing",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Set of components used for virtualizing DOM",
   "author": {
     "name": "Maciej Kaczorowski",
@@ -46,12 +46,12 @@
     "@vue/cli-plugin-babel": "^4.5.10",
     "@vue/cli-service": "^4.5.10",
     "eslint-plugin-import": "^2.22.1",
-    "@vue/eslint-config-airbnb": "^5.1.0",
-    "eslint": "^7.17.0",
+    "@vue/eslint-config-airbnb": "^5.3.0",
+    "eslint": "^7.18.0",
     "eslint-plugin-vue": "^7.4.1",
     "cross-env": "^7.0.3",
     "minimist": "^1.2.5",
-    "rollup": "^2.36.1",
+    "rollup": "^2.37.1",
     "style-loader": "^2.0.0",
     "node-sass": "^5.0.0",
     "sass-loader": "^10.1.1",

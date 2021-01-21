@@ -11,6 +11,7 @@ export const getFlattenedItems = ({
     flattenedItems.push({
       ...rest,
       level,
+      childrenLength: children.length,
     });
 
     flattenedItems.push(...getFlattenedItems({ items: children, level: level + 1 }));
@@ -41,6 +42,7 @@ export const getExpandingFlattenedItems = ({
       expanded: isExpanded,
       rootId,
       rootIndex,
+      childrenLength: children.length,
     });
 
     flattenedItems.push(...getExpandingFlattenedItems({
