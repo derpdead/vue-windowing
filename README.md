@@ -156,8 +156,8 @@ Example:
         <template #body>
             <!-- Might be added custom body which will overwrite DOM virtualization - useful for presenting placeholders in case that there is no data -->
         </template>
-        <template #item="{ item, index, onExpand }">
-            <div v-text="item" @click="onExpand" />
+        <template #item="{ item, onExpand }">
+            <div v-text="item" @click="onExpand(item)" />
         </template>
         <template #footer>
             <!-- Might be added sticky / floating footer -->

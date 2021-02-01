@@ -60,6 +60,10 @@ export default {
       const expandedParents = {};
 
       this.flattenedItems.forEach((item) => {
+        if (typeof expandedParents[item.id] !== 'undefined') {
+          delete expandedParents[item.id];
+        }
+
         if (item.expanded) {
           expandedParents[item.id] = true;
         }
@@ -84,7 +88,10 @@ export default {
   },
   methods: {
     onExpandItem(item) {
-      const itemIndex = this.flattenedItems.findIndex(({ id }) => id === item.id);
+      const itemIndex = this.flattenedItems.findIndex(({
+        id,
+        rootId,
+      }) => id === item.id && rootId === item.rootId);
 
       if (itemIndex !== -1) {
         this.flattenedItems[itemIndex].expanded = !this.flattenedItems[itemIndex].expanded;
@@ -93,7 +100,7 @@ export default {
           let i = itemIndex + 1;
 
           while (i < this.flattenedItems.length - 1
-            && this.flattenedItems[i].rootIndex > this.flattenedItems[itemIndex].rootIndex) {
+            && this.flattenedItems[i].level > this.flattenedItems[itemIndex].level) {
             this.flattenedItems[i].expanded = false;
 
             i += 1;

@@ -32,9 +32,9 @@ export const getExpandingFlattenedItems = ({
   items.forEach((item) => {
     const { children = [], ...rest } = item;
 
-    const isExpanded = typeof expanded === 'object'
+    const isExpanded = Boolean(typeof expanded === 'object'
       ? expanded[rest.id]
-      : expanded;
+      : expanded);
 
     flattenedItems.push({
       ...rest,
