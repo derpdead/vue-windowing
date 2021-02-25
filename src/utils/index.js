@@ -25,6 +25,7 @@ export const getExpandingFlattenedItems = ({
   expanded,
   level = 0,
   rootId = null,
+  groupId = null,
   rootIndex = 0,
 }) => {
   const flattenedItems = [];
@@ -36,10 +37,15 @@ export const getExpandingFlattenedItems = ({
       ? expanded[rest.id]
       : expanded);
 
+    const mappedGroupId = level === 0
+      ? rest.id
+      : groupId;
+
     flattenedItems.push({
       ...rest,
       level,
       expanded: isExpanded,
+      groupId: mappedGroupId,
       rootId,
       rootIndex,
       childrenLength: children.length,
@@ -49,6 +55,7 @@ export const getExpandingFlattenedItems = ({
       items: children,
       expanded,
       level: level + 1,
+      groupId: mappedGroupId,
       rootId: rest.id,
       rootIndex: flattenedItems.length,
     }));
