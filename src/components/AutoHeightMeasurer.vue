@@ -1,18 +1,7 @@
-<template>
-    <ResizeObserver @resize="onResize">
-        <slot />
-    </ResizeObserver>
-</template>
-
 <script>
-
-import ResizeObserver from './ResizeObserver.vue';
 
 export default {
   name: 'AutoHeightMeasurer',
-  components: {
-    ResizeObserver,
-  },
   props: {
     index: {
       type: Number,
@@ -29,11 +18,6 @@ export default {
     }
   },
   methods: {
-    onResize(entry) {
-      const { height } = entry.contentRect;
-
-      this.onHeightChange(height);
-    },
     onHeightChange(height) {
       if (height !== this.height && height !== 0) {
         this.$emit('height', {
@@ -42,6 +26,12 @@ export default {
         });
       }
     },
+  },
+  mounted() {
+    this.onHeightChange(this.$el.offsetHeight);
+  },
+  render() {
+    return this.$scopedSlots.default();
   },
 };
 </script>

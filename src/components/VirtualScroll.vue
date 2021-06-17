@@ -17,7 +17,7 @@
                                 v-for="(item, index) in visibleItems"
                                 :key="`${index + startNode} | ${item.id || item}`"
                                 :index="index + startNode"
-                                :height="cachedHeight[index + startNode]"
+                                :height="cachedHeight[index + startNode] || estimatedHeight"
                                 @height="onMeasuredHeight">
                                 <slot
                                     name="item"
@@ -62,84 +62,42 @@ export default {
   data() {
     return {
       height: 0,
+      totalHeight: this.items.length * this.estimatedHeight,
       scrollTop: 0,
       cachedHeight: {},
+      firstVisibleNode: 0,
+      lastVisibleNode: 0,
+      childPositions: {
+        0: 0,
+      },
     };
   },
   watch: {
     items(newValue, oldValue) {
       if (newValue.length !== oldValue.length) {
+        const startNode = this.getFirstVisibleNode();
+        const endNode = this.getLastVisibleNode(startNode);
+
+        this.firstVisibleNode = startNode;
+        this.lastVisibleNode = endNode;
+
+        this.totalHeight = this.items.length * this.estimatedHeight;
+        this.childPositions = {
+          0: 0,
+        };
         this.cachedHeight = {};
       }
     },
   },
   computed: {
-    childPositions() {
-      const results = [
-        0,
-      ];
-      for (let i = 1; i < this.rowCount; i += 1) {
-        results.push(results[i - 1] + (this.cachedHeight[i - 1] || this.estimatedHeight));
-      }
-      return results;
-    },
-    totalHeight() {
-      const offset = this.cachedHeight[this.rowCount - 1] || this.estimatedHeight;
-
-      return this.rowCount
-        ? this.childPositions[this.rowCount - 1] + offset
-        : 0;
-    },
-    fixedHeight() {
-      return this.height > this.totalHeight
-        ? this.totalHeight
-        : this.height;
-    },
-    firstVisibleNode() {
-      let startRange = 0;
-      let endRange = this.rowCount ? this.rowCount - 1 : this.rowCount;
-
-      while (endRange !== startRange) {
-        const middle = Math.floor((endRange - startRange) / 2 + startRange);
-
-        if (
-          this.childPositions[middle] <= this.scrollTop
-                    && this.childPositions[middle + 1] > this.scrollTop
-        ) {
-          return middle;
-        }
-
-        if (middle === startRange) {
-          return endRange;
-        }
-
-        if (this.childPositions[middle] <= this.scrollTop) {
-          startRange = middle;
-        } else {
-          endRange = middle;
-        }
-      }
-      return this.rowCount;
-    },
     startNode() {
       return Math.max(0, this.firstVisibleNode - this.renderAhead);
     },
-    lastVisibleNode() {
-      const offset = this.childPositions[this.firstVisibleNode] + this.fixedHeight;
-      let endNode;
-
-      for (endNode = this.firstVisibleNode; endNode < this.rowCount; endNode += 1) {
-        if (this.childPositions[endNode] > offset) {
-          return endNode;
-        }
-      }
-      return endNode;
-    },
     endNode() {
-      return Math.min(this.rowCount - 1, this.lastVisibleNode + this.renderAhead);
+      return Math.min(this.rowCount, this.lastVisibleNode + this.renderAhead);
     },
     visibleNodeCount() {
-      return this.endNode - this.startNode + 1;
+      return this.endNode - this.startNode;
     },
     offsetY() {
       return this.childPositions[this.startNode];
@@ -163,18 +121,33 @@ export default {
         height: `${this.totalHeight}px`,
       };
     },
-    rootStyle() {
-      return {
-        height: `${this.fixedHeight}px`,
-      };
+    fixedHeight() {
+      return this.height > this.totalHeight
+        ? this.totalHeight
+        : this.height;
     },
+  },
+  mounted() {
+    requestAnimationFrame(() => {
+      this.height = this.$el.offsetHeight;
+
+      const start = 0;
+      const end = Math.ceil((this.height * 2) / this.estimatedHeight);
+
+      for (let i = start + 1; i < end + this.renderAhead; i += 1) {
+        this.childPositions[i] = this.childPositions[i - 1] + this.estimatedHeight;
+      }
+
+      this.firstVisibleNode = start;
+      this.lastVisibleNode = end;
+    });
   },
   methods: {
     onIntersect(isIntersecting) {
       if (isIntersecting
-          && this.firstVisibleNode !== 0
-          && this.scrollTop > 0
-          && this.scrollTop !== this.$refs.root.scrollTop) {
+        && this.firstVisibleNode !== 0
+        && this.scrollTop > 0
+        && this.scrollTop !== this.$refs.root.scrollTop) {
         window.requestAnimationFrame(() => {
           this.$refs.root.scrollTo(0, this.scrollTop);
         });
@@ -187,15 +160,89 @@ export default {
       index,
       height,
     }) {
-      this.cachedHeight = {
-        ...this.cachedHeight,
-        [index]: height,
-      };
+      const heightToAdd = height - this.estimatedHeight;
+
+      this.totalHeight += heightToAdd;
+
+      this.cachedHeight[index] = height;
+      for (let i = this.startNode; i < this.endNode; i += 1) {
+        const prevIndex = i - 1;
+
+        const prevPosition = typeof this.childPositions[prevIndex] === 'undefined'
+          ? prevIndex * this.estimatedHeight
+          : this.childPositions[prevIndex];
+
+        const position = prevPosition + (this.cachedHeight[prevIndex] || this.estimatedHeight);
+
+        this.childPositions[i] = position;
+      }
     },
     onScroll() {
       window.requestAnimationFrame(() => {
         this.scrollTop = this.$refs.root.scrollTop;
+
+        const startNode = this.getFirstVisibleNode();
+        const endNode = this.getLastVisibleNode(startNode);
+
+        const offsetStart = Math.max(0, startNode - this.renderAhead);
+
+        for (let i = offsetStart; i < endNode; i += 1) {
+          const prevIndex = i - 1;
+
+          const prevPosition = typeof this.childPositions[prevIndex] === 'undefined'
+            ? prevIndex * this.estimatedHeight
+            : this.childPositions[prevIndex];
+
+          const position = prevPosition + (this.cachedHeight[prevIndex] || this.estimatedHeight);
+
+          this.childPositions[i] = position;
+        }
+
+        this.firstVisibleNode = startNode;
+        this.lastVisibleNode = endNode;
       });
+    },
+    getFirstVisibleNode() {
+      let startRange = 0;
+      let endRange = this.rowCount ? this.rowCount - 1 : this.rowCount;
+
+      while (endRange !== startRange) {
+        const middle = Math.floor((endRange - startRange) / 2 + startRange);
+
+        if (
+          (this.childPositions[middle] <= this.scrollTop
+            && this.childPositions[middle + 1] > this.scrollTop)
+        ) {
+          return middle;
+        }
+
+        if (middle === startRange) {
+          return endRange;
+        }
+
+        if (this.childPositions[middle] <= this.scrollTop) {
+          startRange = middle;
+        } else {
+          endRange = middle;
+        }
+      }
+      return this.rowCount;
+    },
+    getLastVisibleNode(startNode) {
+      const offset = this.childPositions[startNode] + this.fixedHeight;
+      let endNode;
+
+      for (endNode = startNode; endNode < this.rowCount; endNode += 1) {
+        if (typeof this.childPositions[endNode] === 'undefined') {
+          return Math.min(startNode + this.visibleNodeCount, this.rowCount - 1);
+        }
+
+        if (this.childPositions[endNode] > offset) {
+          return endNode;
+        }
+      }
+
+      return endNode;
     },
   },
 };
@@ -216,10 +263,5 @@ export default {
         will-change: transform;
         overflow: hidden;
     }
-}
-
-.test {
-    position: sticky;
-    top: 0;
 }
 </style>
