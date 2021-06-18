@@ -1,6 +1,6 @@
 {
   "name": "vue-windowing",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "Set of components used for virtualizing DOM",
   "author": {
     "name": "Maciej Kaczorowski",
@@ -58,11 +58,11 @@
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-vue": "^5.1.9",
-    "vue": "^2.6.14",
-    "vue-template-compiler": "^2.6.14"
+    "vue": "^2.6.12",
+    "vue-template-compiler": "^2.6.12"
   },
   "peerDependencies": {
-    "vue": "^2.6.14"
+    "vue": "^2.6.12"
   },
   "engines": {
     "node": ">=10"
