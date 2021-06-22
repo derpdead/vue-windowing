@@ -13,13 +13,11 @@ export default {
     },
   },
   updated() {
-    if (this.$el) {
-      this.onHeightChange(this.$el.offsetHeight);
-    }
+    this.onHeightChange(this.$el.offsetHeight);
   },
   methods: {
     onHeightChange(height) {
-      if (height !== this.height && height !== 0) {
+      if (this.$el && height !== this.height && height !== 0) {
         this.$emit('height', {
           index: this.index,
           height,

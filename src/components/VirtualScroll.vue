@@ -15,7 +15,7 @@
                             class="virtual-scroll__spacer">
                             <AutoHeightMeasurer
                                 v-for="(item, index) in visibleItems"
-                                :key="`${index + startNode} | ${item.id || item}`"
+                                :key="`${item.id || item}`"
                                 :index="index + startNode"
                                 :height="cachedHeight[index + startNode] || estimatedHeight"
                                 @height="onMeasuredHeight">
@@ -75,16 +75,11 @@ export default {
   watch: {
     items(newValue, oldValue) {
       if (newValue.length !== oldValue.length) {
-        const startNode = this.getFirstVisibleNode();
-        const endNode = this.getLastVisibleNode(startNode);
-
-        this.firstVisibleNode = startNode;
-        this.lastVisibleNode = endNode;
-
         this.totalHeight = this.items.length * this.estimatedHeight;
         this.childPositions = {
           0: 0,
         };
+
         this.cachedHeight = {};
       }
     },
@@ -155,6 +150,14 @@ export default {
     },
     onResize(entry) {
       this.height = entry.contentRect.height;
+
+      if (this.height > 0 && this.rowCount > 0) {
+        const startNode = this.getFirstVisibleNode();
+        const endNode = this.getLastVisibleNode(startNode);
+
+        this.firstVisibleNode = startNode;
+        this.lastVisibleNode = endNode;
+      }
     },
     onMeasuredHeight({
       index,
