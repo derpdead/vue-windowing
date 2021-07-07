@@ -1,6 +1,6 @@
 {
   "name": "vue-windowing",
-  "version": "0.14.4",
+  "version": "0.14.5",
   "description": "Set of components used for virtualizing DOM",
   "author": {
     "name": "Maciej Kaczorowski",

@@ -15,7 +15,7 @@
                             class="virtual-scroll__spacer">
                             <AutoHeightMeasurer
                                 v-for="(item, index) in visibleItems"
-                                :key="`${item.id || item}`"
+                                :key="`${item.id || item} - ${index + startNode}`"
                                 :index="index + startNode"
                                 :height="cachedHeight[index + startNode] || estimatedHeight"
                                 @height="onMeasuredHeight">
@@ -79,7 +79,6 @@ export default {
         this.childPositions = {
           0: 0,
         };
-
         this.cachedHeight = {};
       }
     },
@@ -123,9 +122,12 @@ export default {
     },
   },
   mounted() {
-    requestAnimationFrame(() => {
-      this.height = this.$el.offsetHeight;
+    this.height = this.$el.offsetHeight;
 
+    this.initVisibleNodes();
+  },
+  methods: {
+    initVisibleNodes() {
       const start = 0;
       const end = Math.ceil((this.height * 2) / this.estimatedHeight);
 
@@ -135,29 +137,41 @@ export default {
 
       this.firstVisibleNode = start;
       this.lastVisibleNode = end;
-    });
-  },
-  methods: {
+    },
+    updateVisibleNodes() {
+      const startNode = this.getFirstVisibleNode();
+      const endNode = this.getLastVisibleNode(startNode);
+
+      const offsetStart = Math.max(0, startNode - this.renderAhead);
+
+      for (let i = offsetStart; i < endNode; i += 1) {
+        const prevIndex = i - 1;
+
+        const prevPosition = typeof this.childPositions[prevIndex] === 'undefined'
+          ? prevIndex * this.estimatedHeight
+          : this.childPositions[prevIndex];
+
+        const position = prevPosition + (this.cachedHeight[prevIndex] || this.estimatedHeight);
+
+        this.childPositions[i] = position;
+      }
+
+      this.firstVisibleNode = startNode;
+      this.lastVisibleNode = endNode;
+    },
     onIntersect(isIntersecting) {
       if (isIntersecting
         && this.firstVisibleNode !== 0
         && this.scrollTop > 0
         && this.scrollTop !== this.$refs.root.scrollTop) {
         window.requestAnimationFrame(() => {
+          console.log('intersecting');
           this.$refs.root.scrollTo(0, this.scrollTop);
         });
       }
     },
     onResize(entry) {
       this.height = entry.contentRect.height;
-
-      if (this.height > 0 && this.rowCount > 0) {
-        const startNode = this.getFirstVisibleNode();
-        const endNode = this.getLastVisibleNode(startNode);
-
-        this.firstVisibleNode = startNode;
-        this.lastVisibleNode = endNode;
-      }
     },
     onMeasuredHeight({
       index,
@@ -175,34 +189,20 @@ export default {
           ? prevIndex * this.estimatedHeight
           : this.childPositions[prevIndex];
 
-        const position = prevPosition + (this.cachedHeight[prevIndex] || this.estimatedHeight);
-
-        this.childPositions[i] = position;
+        this.childPositions[i] = prevPosition + (
+          this.cachedHeight[prevIndex] || this.estimatedHeight
+        );
       }
     },
     onScroll() {
       window.requestAnimationFrame(() => {
         this.scrollTop = this.$refs.root.scrollTop;
 
-        const startNode = this.getFirstVisibleNode();
-        const endNode = this.getLastVisibleNode(startNode);
-
-        const offsetStart = Math.max(0, startNode - this.renderAhead);
-
-        for (let i = offsetStart; i < endNode; i += 1) {
-          const prevIndex = i - 1;
-
-          const prevPosition = typeof this.childPositions[prevIndex] === 'undefined'
-            ? prevIndex * this.estimatedHeight
-            : this.childPositions[prevIndex];
-
-          const position = prevPosition + (this.cachedHeight[prevIndex] || this.estimatedHeight);
-
-          this.childPositions[i] = position;
+        if (this.firstVisibleNode > this.rowCount) {
+          this.initVisibleNodes();
+        } else {
+          this.updateVisibleNodes();
         }
-
-        this.firstVisibleNode = startNode;
-        this.lastVisibleNode = endNode;
       });
     },
     getFirstVisibleNode() {
